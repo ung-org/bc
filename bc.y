@@ -54,6 +54,7 @@ program
 
 input_item
 	: semicolon_list NEWLINE {
+		bc_print(bc_eval($1));
 	}
 	| function
 ;
@@ -172,7 +173,7 @@ expression
 		$$ = bc_operation(ADD, $1, $3);
 	}
 	| expression SUB_OP expression {
-		$$ = bc_operation(ADD, $1, $3);
+		$$ = bc_operation(SUB, $1, $3);
 	}
 	| expression MUL_OP expression {
 		$$ = bc_operation($2, $1, $3);
@@ -221,6 +222,10 @@ static char **files;
 
 int yywrap(void)
 {
+	if (files == NULL || files[optind] == NULL) {
+		return 1;
+	}
+
 	char *file = files[optind++];
 
 	if (yyin != stdin) {
